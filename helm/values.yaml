@@ -1,0 +1,62 @@
+awsProfile: dev
+awsRegion: us-west-2
+
+crossplane:
+  providerConfigRef: default
+  credentials:
+    namespace: crossplane-system
+    name: aws-creds
+    key: creds
+
+sqs:
+  queue1:
+    visibilityTimeout: 10
+    policy: |
+      {
+        <<insert JSON policy>>
+      }
+
+  queue2.fifo:
+    visibilityTimeout: 10
+    fifoQueue: true
+    contentBasedDeduplication: true
+    policy: |
+      {
+        <<insert JSON policy>>
+      }
+    redrivePolicy:
+      deadLetterTargetArnRef:
+        name: dlq-queue.fifo
+      maxReceiveCount: 5
+
+  queue3:
+    fifoQueue: true
+    contentBasedDeduplication: true
+
+dynamodb:
+  db1:
+    keySchema:
+      - attributeName: request_id/sample_id
+        keyType: HASH
+      - attributeName: timestamp
+        keyType: RANGE
+    attributeDefinitions:
+      - attributeName: foo1
+        attributeType: S
+    globalSecondaryIndexes:
+      - indexName: some-index
+        keySchema:
+          - keyType: HASH
+            attributeName: bar
+        projection:
+          projectionType: ALL
+
+  db2:
+    keySchema:
+      - attributeName: foo2
+        keyType: HASH
+      - attributeName: date
+        keyType: RANGE
+    attributeDefinitions:
+      - attributeName: date
+        attributeType: S

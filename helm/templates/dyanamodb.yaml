@@ -1,0 +1,16 @@
+{{- range $k, $val := .Values.dynamodb }}
+apiVersion: dynamodb.aws.crossplane.io/v1alpha1
+kind: Table
+metadata:
+  name: "resbio-{{ $.Values.awsProfile }}-{{ $.Values.awsRegion }}-{{ $k }}"
+spec:
+  deletionPolicy: {{ .deletionPolicy | default "Delete" }}
+  forProvider:
+    attributeDefinitions: {{- toYaml .attributeDefinitions | nindent 6 }}
+    billingMode: {{ .billingMode | default "PAY_PER_REQUEST" }}
+    globalSecondaryIndexes: {{- toYaml .globalSecondaryIndexes | nindent 6 }}
+    keySchema: {{- toYaml .keySchema | nindent 6 }}
+    region: {{ $.Values.awsRegion }}
+  providerConfigRef:
+    name: {{ $.Values.crossplane.providerConfigRef }}
+{{- end }}

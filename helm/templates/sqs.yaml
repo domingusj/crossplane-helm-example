@@ -1,0 +1,21 @@
+{{- range $k, $val := .Values.sqs }}
+apiVersion: sqs.aws.crossplane.io/v1beta1
+kind: Queue
+metadata:
+  name: "resbio-{{ $.Values.awsProfile }}-{{ $.Values.awsRegion }}-{{ $k }}"
+spec:
+  deletionPolicy: {{ .deletionPolicy | default "Delete" }}
+  forProvider:
+    contentBasedDeduplication: {{ .contentBasedDeduplication }}
+    delaySeconds: {{ .delaySeconds }}
+    fifoQueue: {{ .fifoQueue }}
+    maximumMessageSize: {{ .maximumMessageSize | default 262144 }}
+    messageRetentionPeriod: {{ .messageRetentionPeriod | default 1209600 }}
+    policy: {{ .policy | quote }}
+    receiveMessageWaitTimeSeconds: {{ .receiveMessageWaitTimeSeconds | default 0 }}
+    redrivePolicy: {{ toJson .redrivePolicy }}
+    region: {{ $.Values.awsRegion }}
+    visibilityTimeout: {{ .visibilityTimeout }}
+  providerConfigRef:
+    name: {{ $.Values.crossplane.providerConfigRef }}
+{{- end }}
